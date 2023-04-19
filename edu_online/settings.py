@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.courses.apps.CoursesConfig',
     'apps.organizations.apps.OrganizationsConfig',
     'apps.operations.apps.OperationsConfig',
+    'captcha',
 ]
 
 MIDDLEWARE = [
