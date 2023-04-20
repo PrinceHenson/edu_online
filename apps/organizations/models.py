@@ -34,14 +34,14 @@ class Org(BaseModel):
                                verbose_name='organization address')
     view_num = models.PositiveIntegerField(
         default=0,
-        verbose_name='number of views of the course')
+        verbose_name='number of views of the organization')
     fav_num = models.PositiveIntegerField(
         default=0,
-        verbose_name='number of favorite of the course'
+        verbose_name='number of favorite of the organization'
     )
-    image = models.ImageField(upload_to='head_image/%Y/%m',
-                              max_length=100,
-                              verbose_name='organization head image')
+    avatar = models.ImageField(upload_to='org/%Y/%m',
+                               max_length=100,
+                               default='default.jpeg')
     course_num = models.PositiveIntegerField(
         default=0,
         verbose_name='number of courses in this organization')
@@ -49,6 +49,10 @@ class Org(BaseModel):
         default=0,
         verbose_name='number of students in this organization'
     )
+    is_certified = models.BooleanField(default=False,
+                                       verbose_name='certified organization')
+    is_gold = models.BooleanField(default=False,
+                                  verbose_name='gold organization')
     city = models.ForeignKey('City', on_delete=models.CASCADE,
                              verbose_name='organization in which city')
 
@@ -58,6 +62,9 @@ class Org(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def courses(self):
+        return self.course_set.all().order_by('-stu_num')
 
 
 class Teacher(BaseModel):
@@ -82,9 +89,9 @@ class Teacher(BaseModel):
         default=0,
         verbose_name='number of favorite of the course'
     )
-    image = models.ImageField(upload_to='head_image/%Y/%m',
-                              max_length=100,
-                              verbose_name='teacher head image')
+    avatar = models.ImageField(upload_to='org/teacher/%Y/%m',
+                               max_length=100,
+                               default='default.jpeg')
 
     class Meta:
         verbose_name = 'teacher'

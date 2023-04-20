@@ -10,6 +10,9 @@ class Course(BaseModel):
         ('H', 'HIGH')
     ]
 
+    teacher = models.ForeignKey('organizations.teacher',
+                                on_delete=models.CASCADE)
+    org = models.ForeignKey('organizations.org', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name='course name')
     description = models.CharField(max_length=255,
                                    verbose_name='course description')
@@ -18,7 +21,8 @@ class Course(BaseModel):
     stu_num = models.PositiveIntegerField(
         default=0,
         verbose_name='number of students of the course')
-    duration = models.PositiveIntegerField(default=0, verbose_name='Course duration')
+    duration = models.PositiveIntegerField(default=0,
+                                           verbose_name='Course duration')
     fav_num = models.PositiveIntegerField(
         default=0,
         verbose_name='number of favorite of the course')
@@ -32,9 +36,10 @@ class Course(BaseModel):
     teacher_comment = models.CharField(max_length=255, null=True, blank=True,
                                        verbose_name='teacher comment')
     detail = models.TextField(verbose_name='Course detail')
-    image = models.ImageField(upload_to="courses/%Y/%m", default="default.jpg",
-                              max_length=100,
-                              verbose_name='cover of the course')
+    cover_img = models.ImageField(upload_to="courses/%Y/%m",
+                                  default="default.jpeg",
+                                  max_length=100,
+                                  verbose_name='cover of the course')
     tag = models.CharField(max_length=50, null=True, blank=True,
                            verbose_name='course tag')
 

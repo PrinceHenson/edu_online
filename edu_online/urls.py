@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.views.generic import TemplateView
+from django.views.static import serve
 
 from apps.users.views import LoginView, LogoutView
+from edu_online.settings import MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +28,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('captcha/', include('captcha.urls')),
+    path('org/', include('apps.organizations.urls')),
+    # 配置上传文件的访问url
+    re_path(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
 ]

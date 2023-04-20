@@ -26,9 +26,8 @@ class UserProfile(AbstractUser, BaseModel):
         blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     mobile = models.CharField(max_length=11)
-    head_img = models.ImageField(
-        upload_to="head_image/%Y/%m",
-        default="default.jpg")
+    avatar = models.ImageField(upload_to="avatar/%Y/%m",
+                               default="default.jpeg")
 
     class Meta:
         verbose_name = 'user'
