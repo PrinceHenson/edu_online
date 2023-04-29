@@ -64,7 +64,10 @@ class Org(BaseModel):
         return self.name
 
     def courses(self):
-        return self.course_set.all().order_by('-stu_num')
+        return self.course_set.all()
+
+    def teachers(self):
+        return self.teacher_set.all()
 
 
 class Teacher(BaseModel):
@@ -99,3 +102,6 @@ class Teacher(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def courses(self):
+        return self.course_set.count()

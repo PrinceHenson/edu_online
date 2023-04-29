@@ -30,7 +30,7 @@ class UserFavorite(BaseModel):
 
     user = models.ForeignKey(USER_PROFILE_MODEL, on_delete=models.CASCADE)
     fav_id = models.PositiveIntegerField()
-    fav_type = models.CharField(choices=FAVORITE_TYPE, max_length=12)
+    fav_type = models.PositiveIntegerField(choices=FAVORITE_TYPE)
 
     class Meta:
         verbose_name = 'user favorite'

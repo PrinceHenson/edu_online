@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class BaseModel(models.Model):
-    is_deleted = models.PositiveSmallIntegerField(default=0)
+    is_deleted = models.BooleanField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)

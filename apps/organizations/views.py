@@ -1,15 +1,16 @@
 import logging
 
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views import View
 
+from apps.operations.models import UserFavorite
 from apps.organizations.models import City, Org
 
 logger = logging.getLogger(__name__)
 
 
-class OrgView(View):
+class OrgIndexView(View):
     ORG_CATEGORY = {category[1]: category[0] for category in Org.CATEGORY}
 
     def _validate(self, request):
@@ -24,6 +25,8 @@ class OrgView(View):
             return 'error'
 
     def get(self, request):
+        logger.warning('[warning]in org index page...')
+        logger.info('[info]in org index page...')
         self._validate(request)
         category = request.GET.get('category', '')
         all_orgs = Org.objects.all()
@@ -55,3 +58,74 @@ class OrgView(View):
                                'city_id': city,
                                'sort': sort,
                                'hot_orgs': hot_orgs})
+
+
+def be_favorite(user_id, fav_id, fav_type):
+    return UserFavorite.objects.filter(user=user_id,
+                                       fav_id=fav_id,
+                                       fav_type=fav_type)
+
+
+class OrgDescView(View):
+    page_title = 'desc'
+
+    def get(self, request, org_id):
+        org = get_object_or_404(Org, pk=org_id)
+        favorite_record = be_favorite(request.user, org_id, 3)
+        favorite = True if favorite_record else False
+        return render(request, 'org_detail_desc.html',
+                      context={'org': org, 'page_title': self.page_title,
+                               'favorite': favorite})
+
+
+class OrgDetailView(View):
+    page_title = 'detail'
+
+    def get(self, request, org_id):
+        org = get_object_or_404(Org, pk=org_id)
+        courses = org.courses()[:3]
+        teachers = org.teachers()[:3]
+
+        favorite_record = be_favorite(request.user, org_id, 3)
+        favorite = True if favorite_record else False
+        return render(request, 'org_detail_homepage.html',
+                      context={'org': org, 'all_courses': courses,
+                               'all_teachers': teachers,
+                               'favorite': favorite,
+                               'page_title': self.page_title})
+
+
+class OrgTeacherView(View):
+    page_title = 'teacher'
+
+    def get(self, request, org_id):
+        org = get_object_or_404(Org, pk=org_id)
+        teachers = org.teachers()
+        course_num = org.courses().count()
+
+        favorite_record = be_favorite(request.user, org_id, 3)
+        favorite = True if favorite_record else False
+        return render(request, 'org_detail_teachers.html',
+                      context={'org': org, 'teachers': teachers,
+                               'course_num': course_num,
+                               'favorite': favorite,
+                               'page_title': self.page_title})
+
+
+class OrgCourseView(View):
+    page_title = 'course'
+
+    def get(self, request, org_id):
+        org = get_object_or_404(Org, pk=org_id)
+        courses = org.courses()
+
+        paginator = Paginator(courses, 3)
+        page_num = request.GET.get('page')
+        page_courses = paginator.get_page(page_num)
+
+        favorite_record = be_favorite(request.user, org_id, 3)
+        favorite = True if favorite_record else False
+        return render(request, 'org_detail_courses.html',
+                      context={'org': org, 'courses': page_courses,
+                               'favorite': favorite,
+                               'page_title': self.page_title})

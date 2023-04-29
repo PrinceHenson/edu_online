@@ -28,7 +28,10 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('captcha/', include('captcha.urls')),
-    path('org/', include('apps.organizations.urls')),
+    path('org/', include(('apps.organizations.urls', 'organizations'),
+                         namespace='org')),
+    path('op/', include(('apps.operations.urls', 'operations'),
+                        namespace='op')),
     # 配置上传文件的访问url
     re_path(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
 ]
