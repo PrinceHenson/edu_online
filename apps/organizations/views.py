@@ -4,8 +4,9 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 
+from apps.courses.models import Course
 from apps.operations.models import UserFavorite
-from apps.organizations.models import City, Org
+from apps.organizations.models import City, Org, Teacher
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,14 @@ def be_favorite(user_id, fav_id, fav_type):
                                        fav_type=fav_type)
 
 
+def org_courses(org_id):
+    # step 1: SELECT id from organizations_teacher WHERE org_id = org_id
+    # step 2: SELECT * FROM courses_course WHERE teacher_id in (step 1 result)
+    teachers = Teacher.objects.filter(org_id=org_id).values_list('id',
+                                                                 flat=True)
+    return Course.objects.filter(teacher_id__in=list(teachers))
+
+
 class OrgDescView(View):
     page_title = 'desc'
 
@@ -83,7 +92,7 @@ class OrgDetailView(View):
 
     def get(self, request, org_id):
         org = get_object_or_404(Org, pk=org_id)
-        courses = org.courses()[:3]
+        courses = org_courses(org_id)[:3]
         teachers = org.teachers()[:3]
 
         favorite_record = be_favorite(request.user, org_id, 3)
@@ -101,7 +110,7 @@ class OrgTeacherView(View):
     def get(self, request, org_id):
         org = get_object_or_404(Org, pk=org_id)
         teachers = org.teachers()
-        course_num = org.courses().count()
+        course_num = org_courses(org_id).count()
 
         favorite_record = be_favorite(request.user, org_id, 3)
         favorite = True if favorite_record else False
@@ -117,7 +126,7 @@ class OrgCourseView(View):
 
     def get(self, request, org_id):
         org = get_object_or_404(Org, pk=org_id)
-        courses = org.courses()
+        courses = org_courses(org_id)
 
         paginator = Paginator(courses, 3)
         page_num = request.GET.get('page')

@@ -63,8 +63,8 @@ class Org(BaseModel):
     def __str__(self):
         return self.name
 
-    def courses(self):
-        return self.course_set.all()
+    #def courses(self):
+    #    return self.course_set.all()
 
     def teachers(self):
         return self.teacher_set.all()

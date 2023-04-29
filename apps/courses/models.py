@@ -12,7 +12,7 @@ class Course(BaseModel):
 
     teacher = models.ForeignKey('organizations.teacher',
                                 on_delete=models.CASCADE)
-    org = models.ForeignKey('organizations.org', on_delete=models.CASCADE)
+    #org = models.ForeignKey('organizations.org', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name='course name')
     description = models.CharField(max_length=255,
                                    verbose_name='course description')
