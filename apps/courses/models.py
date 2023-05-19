@@ -50,6 +50,10 @@ class Course(BaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def chapter_count(self):
+        return self.chapter_set.count()
+
 
 class Chapter(BaseModel):
     course = models.ForeignKey('Course', on_delete=models.CASCADE,

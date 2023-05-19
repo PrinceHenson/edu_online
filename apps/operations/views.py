@@ -8,7 +8,7 @@ from apps.operations.models import UserFavorite
 from apps.organizations.models import Org, Teacher
 
 
-class OrgFavoriteView(View):
+class FavoriteView(View):
     def post(self, request):
         if not request.user.is_authenticated:
             return JsonResponse({'status': 'fail', 'msg': 'has not login'})

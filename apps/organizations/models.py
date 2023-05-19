@@ -69,6 +69,17 @@ class Org(BaseModel):
     def teachers(self):
         return self.teacher_set.all()
 
+    @property
+    def teacher_count(self):
+        return self.teacher_set.count()
+
+    @property
+    def courses_count(self):
+        total_count = 0
+        for teacher in self.teacher_set.all():
+            total_count += teacher.courses_count
+        return total_count
+
 
 class Teacher(BaseModel):
     org = models.ForeignKey('Org', on_delete=models.CASCADE,
@@ -87,10 +98,10 @@ class Teacher(BaseModel):
         verbose_name='teaching features of the teacher')
     view_num = models.PositiveIntegerField(
         default=0,
-        verbose_name='number of views of the course')
+        verbose_name='number of views of the teacher')
     fav_num = models.PositiveIntegerField(
         default=0,
-        verbose_name='number of favorite of the course'
+        verbose_name='number of favorite of the teacher'
     )
     avatar = models.ImageField(upload_to='org/teacher/%Y/%m',
                                max_length=100,
@@ -103,5 +114,6 @@ class Teacher(BaseModel):
     def __str__(self):
         return self.name
 
-    def courses(self):
+    @property
+    def courses_count(self):
         return self.course_set.count()
