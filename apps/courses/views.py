@@ -1,6 +1,6 @@
 from django.views.generic import DetailView, ListView
 
-from apps.courses.models import Course
+from apps.courses.models import Course, CourseTag
 from apps.operations.models import UserFavorite
 
 
@@ -36,6 +36,17 @@ class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course_detail.html'
 
+    def _get_related_courses(self):
+        course_id = self.object.id
+        tags = CourseTag.objects.filter(course=course_id).values_list('tag')
+        related_courses = []
+        for tag_id in tags:
+            courses = CourseTag.objects.filter(
+                tag=tag_id[0]).exclude(
+                course=course_id).select_related('course')
+            related_courses += courses
+        return [i.course for i in list(set(related_courses))]
+
     def get_context_data(self, **kwargs):
         context = super(CourseDetailView, self).get_context_data()
         if not self.request.user.is_authenticated:
@@ -48,5 +59,5 @@ class CourseDetailView(DetailView):
         org_favorite = True if org_fav_record else False
         context['course_favorite'] = course_favorite
         context['org_favorite'] = org_favorite
+        context['related_courses'] = self._get_related_courses()[0:3]
         return context
-

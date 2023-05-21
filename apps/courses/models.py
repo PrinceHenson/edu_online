@@ -40,8 +40,6 @@ class Course(BaseModel):
                                   default="default.jpeg",
                                   max_length=100,
                                   verbose_name='cover of the course')
-    tag = models.CharField(max_length=50, null=True, blank=True,
-                           verbose_name='course tag')
 
     class Meta:
         verbose_name = 'course'
@@ -99,3 +97,18 @@ class CourseResource(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class Tag(BaseModel):
+    name = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
+class CourseTag(BaseModel):
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+    tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('course', 'tag')

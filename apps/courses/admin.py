@@ -1,21 +1,27 @@
 from django.contrib import admin
 
-from apps.courses.models import Course, Chapter, Section, CourseResource
+from apps.courses.models import Chapter, Course, CourseResource, CourseTag,\
+    Section, Tag
+
+
+class TagInline(admin.TabularInline):
+    model = CourseTag
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    #fieldsets = (
+    # fieldsets = (
     #    (None, {'fields': ['name']}),
     #    ('Course Information', {
     #        'fields': ['description', 'level', 'stu_num', 'duration',
     #                   'fav_num', 'category']
     #    })
-    #)
+    # )
     list_display = ['name', 'description', 'level', 'stu_num', 'duration',
                     'fav_num', 'category']
     list_filter = ['name', 'level']
     search_fields = ['name', 'level']
+    inlines = [TagInline]
 
 
 @admin.register(Chapter)
@@ -37,3 +43,8 @@ class CourseResourceAdmin(admin.ModelAdmin):
     list_display = ['name', 'course']
     list_filter = ['name', 'course__name']
     search_fields = ['name', 'course__name']
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    fields = ['name']

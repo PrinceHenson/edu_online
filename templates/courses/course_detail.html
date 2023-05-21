@@ -35,12 +35,20 @@
 						<ul class="parameter">
 							<li><span class="pram word3">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</span><span>{{ object.duration }}</span></li>
                             <li><span class="pram word3">章&nbsp;节&nbsp;数：</span><span>{{ object.chapter_count }}</span></li>
-                            <li><span class="pram word3">课程类别：</span><span title="">{{ object.category }}</span></li>
-							<li class="piclist"><span class="pram word4">学习用户：</span>
-
-                                    <span class="pic"><img width="40" height="40" src="../media/image/2016/12/default_big_14.png"/></span>
-
+                            <li>
+								<span class="pram word3">课程类别：</span>
+								<span title="">
+									{% for tag in object.coursetag_set.all %}
+										{{ tag.tag.name }}
+									{% endfor %}
+								</span>
 							</li>
+							<li><span class="pram word3">讲&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;师：</span><span>{{ object.teacher.name }}</span></li>
+<!--							<li class="piclist"><span class="pram word4">学习用户：</span>-->
+
+<!--                                    <span class="pic"><img width="40" height="40" src="../media/image/2016/12/default_big_14.png"/></span>-->
+
+<!--							</li>-->
 						</ul>
 						<div class="btns">
 							<div class="btn colectgroupbtn"  id="jsLeftBtn">
@@ -135,21 +143,23 @@
 			<div class="right layout">
 				<div class="head">相关课程推荐</div>
                 <div class="group_recommend">
-
-                        <dl>
-                            <dt>
-                                <a target="_blank" href="">
-                                    <img width="240" height="220" class="scrollLoading" src="../media/courses/2016/11/540e57300001d6d906000338-240-135_mvvGYHL.jpg"/>
-                                </a>
-                            </dt>
-                            <dd>
-                                <a target="_blank" href=""><h2> django实战项目</h2></a>
-                                <span class="fl">学习时长：<i class="key">0</i></span>
-                            </dd>
-                        </dl>
-
-
-
+					{% if related_courses %}
+						{% for related_course in related_courses %}
+							<dl>
+								<dt>
+									<a target="_blank" href="{% url 'course:detail' related_course.id %}">
+										<img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ related_course.cover_img }}"/>
+									</a>
+								</dt>
+								<dd>
+									<a target="_blank" href="{% url 'course:detail' related_course.id %}"><h2>{{ related_course.name }}</h2></a>
+									<span class="fl">学习时长：<i class="key">{{ related_course.duration }}</i></span>
+								</dd>
+							</dl>
+						{% endfor %}
+					{% else %}
+					    暂无相关课程
+					{% endif %}
                 </div>
 			</div>
 		</div>
