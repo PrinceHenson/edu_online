@@ -1,7 +1,14 @@
-from django.views.generic import DetailView, ListView
+import logging
+
+from django.views.generic import DetailView, ListView, View
+from django.db import connection
+from django.shortcuts import get_object_or_404, render
 
 from apps.courses.models import Course, CourseTag
 from apps.operations.models import UserFavorite
+
+
+logger = logging.getLogger(__name__)
 
 
 def be_favorite(user_id, fav_id, fav_type):
@@ -38,14 +45,18 @@ class CourseDetailView(DetailView):
 
     def _get_related_courses(self):
         course_id = self.object.id
-        tags = CourseTag.objects.filter(course=course_id).values_list('tag')
-        related_courses = []
-        for tag_id in tags:
-            courses = CourseTag.objects.filter(
-                tag=tag_id[0]).exclude(
-                course=course_id).select_related('course')
-            related_courses += courses
-        return [i.course for i in list(set(related_courses))]
+        tags = CourseTag.objects.filter(course=course_id).values('tag')
+        tags_list = [tag['tag'] for tag in tags]
+        courses = CourseTag.objects.filter(
+            tag__in=tags_list).exclude(
+            course=course_id).select_related('course')
+        results = [i.course for i in list(set(courses))]
+        # logger.warning('[+++++++++++]')
+        # for query in connection.queries:
+        #     logger.warning(query['sql'])
+        #     logger.warning('----------')
+        # logger.warning('[+++++++++++]')
+        return results
 
     def get_context_data(self, **kwargs):
         context = super(CourseDetailView, self).get_context_data()
@@ -61,3 +72,10 @@ class CourseDetailView(DetailView):
         context['org_favorite'] = org_favorite
         context['related_courses'] = self._get_related_courses()[0:3]
         return context
+
+
+class CourseSectionInfoView(View):
+    def get(self, request, course_id):
+        course = get_object_or_404(Course, pk=course_id)
+        return render(request, 'courses/course_section.html',
+                      context={'course': course})
