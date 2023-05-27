@@ -1,10 +1,11 @@
 import logging
 
-from django.views.generic import DetailView, ListView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.shortcuts import get_object_or_404, render
+from django.views.generic import DetailView, ListView, View
 
-from apps.courses.models import Course, CourseTag
+from apps.courses.models import Course, CourseResource, CourseTag
 from apps.operations.models import UserFavorite
 
 
@@ -74,8 +75,14 @@ class CourseDetailView(DetailView):
         return context
 
 
-class CourseSectionInfoView(View):
+class CourseStudyView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
     def get(self, request, course_id):
         course = get_object_or_404(Course, pk=course_id)
-        return render(request, 'courses/course_section.html',
-                      context={'course': course})
+        course_recourses = CourseResource.objects.filter(
+            course=course_id).values('name', 'file')
+        return render(request, 'courses/course_study.html',
+                      context={'course': course,
+                               'course_recourses': course_recourses})

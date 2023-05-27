@@ -13,8 +13,10 @@ class LoginView(View):
         login_data = LoginForm()
         if request.user.is_authenticated:
             return HttpResponseRedirect(reverse('index'))
+        next_url = request.GET.get('next', '')
         return render(request, 'login.html',
-                      context={'login_data': login_data})
+                      context={'login_data': login_data,
+                               'next_url': next_url})
 
     def post(self, request):
         login_form = LoginForm(request.POST)
@@ -31,6 +33,9 @@ class LoginView(View):
                                    'msg': 'username or password is wrong.'})
 
         login(request, user)
+        next_url = request.GET.get('next', '')
+        if next_url:
+            return HttpResponseRedirect(redirect_to=next_url)
         return HttpResponseRedirect(reverse('index'))
 
 

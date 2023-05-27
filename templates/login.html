@@ -50,9 +50,9 @@
     <div class="c-box bg-box">
         <div class="login-box clearfix">
             <div class="hd-login clearfix">
-                <a class="index-logo" href="index.html"></a>
+                <a class="index-logo" href="{% url 'index' %}"></a>
                 <h1>用户登录</h1>
-                <a class="index-font" href="index.html">回到首页</a>
+                <a class="index-font" href="{% url 'index' %}">回到首页</a>
             </div>
             <div class="fl slide">
                 <div class="imgslide">
@@ -70,7 +70,7 @@
                     <h2 class="active">账号登录</h2>
 <!--                    <h2 >动态登录</h2>-->
                 </div>
-                <form class="tab-form" action="{% url 'login' %}" method="post" autocomplete="off" id="form1">
+                <form class="tab-form" action="{% url 'login' %}?next={{ next_url }}" method="post" autocomplete="off" id="form1">
                     <div class="form-group marb20 {% if login_form.errors.username %}errorput{% endif %}">
                         <input name="username" id="account_l" value="{{ login_form.username.value }}" type="text" placeholder="手机号/邮箱" />
                     </div>
@@ -115,7 +115,7 @@
                     {% csrf_token %}
                 </form>
                 -->
-                <p class="form-p">没有在线教育网帐号？<a href="register.html">[立即注册]</a></p>
+                <p class="form-p">没有帐号？<a href="register.html">[立即注册]</a></p>
             </div>
         </div>
     </div>
